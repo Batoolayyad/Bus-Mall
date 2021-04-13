@@ -1,35 +1,6 @@
 'use strict';
 
-/*Instructions
-As a user, I would like to display three unique products by chance so that the viewers can pick a favorite.
 
-Create a constructor function that creates an object associated with each product, and has the following properties:
-Name of the product
-File path of image
-Times the image has been shown
-Create an algorithm that will randomly generate three unique product images from the images directory and display them side-by-side-by-side in the browser window.
-
-For each of the three images, increment its property of times it has been shown by one.
-
-Attach an event listener to the section of the HTML page where the images are going to be displayed.
-
-Once the users ‘clicks’ a product, generate three new products for the user to pick from.
-As a user, I would like to track the selections made by viewers so that I can determine which products to keep for the catalog.
-In the constructor function define a property to hold the number of times a product has been clicked.
-
-After every selection by the viewer, update the newly added property to reflect if it was clicked.
-
-As a user, I would like to control the number of rounds a user is presented with so that I can control the voting session duration.
-By default, the user should be presented with 25 rounds of voting before ending the session.
-Keep the number of rounds in a variable to allow the number to be easily changed for debugging and testing purposes.
-As a user, I would like to view a report of results after all rounds of voting have concluded so that I can evaluate which products were the most popular.
-Create a property attached to the constructor function itself that keeps track of all the products that are currently being considered.
-
-After voting rounds have been completed, remove the event listeners on the product.
-
-Add a button with the text View Results, which when clicked displays the list of all the products followed by the votes received, and number of times seen for each. Example: banana had 3 votes, and was seen 5 times.
-
-NOTE: Displayed product names should match the file name for the product. Example: the product represented with dog-duck.jpg should be displayed to the user as exactly “dog-duck” when the results are shown.*/
 
 let leftImageElement = document.getElementById('left-img');
 let middleImageElement = document.getElementById('middle-img');
@@ -39,6 +10,13 @@ let leftImgIndex;
 let middleImgIndex;
 let rightImgIndex;
 
+//arrays we will use in the chart
+let namesArr=[];
+let votesArr=[];
+let shownArr=[];
+
+let reapetedImage=[];
+
 let maxAttempts = 25;
 let attemptsCounter = 0;
 
@@ -47,8 +25,9 @@ function Bus(name, source) {
   this.source = source;
   this.votes = 0;
   this.shown = 0;
-
+  
   Bus.allBuses.push(this);
+  namesArr.push(this.name);
 }
 
 Bus.allBuses = [];
@@ -98,18 +77,33 @@ function renderImg() {
   Bus.allBuses[rightImgIndex].shown++;
   Bus.allBuses[middleImgIndex].shown++;
   //to prevent the same img shown
-  while (leftImgIndex === middleImgIndex || leftImgIndex === rightImgIndex || middleImgIndex === rightImgIndex) {
-
+  
+  while ((reapetedImage.includes(leftImgIndex)||leftImgIndex === middleImgIndex)|| (reapetedImage.includes(rightImgIndex) ||leftImgIndex === rightImgIndex)||  reapetedImage.includes(middleImgIndex)|| middleImgIndex === rightImgIndex ){
+ 
     leftImgIndex = generateRandomIndex();
     middleImgIndex = generateRandomIndex();
+    rightImgIndex=generateRandomIndex();
   }
-
   //to show the img in the screan 
   leftImageElement.src = Bus.allBuses[leftImgIndex].source;
   middleImageElement.src = Bus.allBuses[middleImgIndex].source;
   rightImageElement.src = Bus.allBuses[rightImgIndex].source;
 
+
+
+  reapetedImage=[];
+  reapetedImage.push(leftImgIndex)
+  reapetedImage.push(middleImgIndex)
+  reapetedImage.push(rightImgIndex)
+
+  console.log(reapetedImage);
+
+
+ 
+
 }
+
+
 
 renderImg();
 
@@ -147,10 +141,23 @@ function handleUserClick(event) {
    //to show the button after the voting ends
     button.hidden=false;
 
+    //add to the votesArray & shownArray
+    for (let i = 0; i < Bus.allBuses.length; i++) {
+      votesArr.push(Bus.allBuses[i].votes);
+      shownArr.push(Bus.allBuses[i].shown);
+    }
+      console.log(votesArr);
+      console.log(shownArr)
+
+
+    // show the chart
+    chart();
+
+
     function resultBtn(event) {
       let list = document.getElementById('result-list');
       let busResult;
-      console.log(`rrom btn ${event.target.id}`)
+      
       for (let i = 0; i < Bus.allBuses.length; i++) {
         busResult = document.createElement('li');
         list.appendChild(busResult);
@@ -164,3 +171,43 @@ function handleUserClick(event) {
 
   }
 }
+function chart() {
+  let ctx = document.getElementById('myChart').getContext('2d');
+  
+  let chart= new Chart(ctx,{
+    // what type is the chart
+   type: 'bar',
+
+  //  the data for showing
+   data:{
+    //  for the names
+      labels: namesArr,
+      
+      datasets: [
+        {
+        label: 'Bus votes',
+        data: votesArr,
+        backgroundColor: [
+          '#3a6351',
+        ],
+  
+        borderWidth: 1
+      },
+
+      {
+        label: 'Bus shown',
+        data: shownArr,
+        backgroundColor: [
+          '#e48257',
+        ],
+  
+        borderWidth: 1
+      }
+      
+    ]
+    },
+    options: {}
+  });
+  
+}
+
