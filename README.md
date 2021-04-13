@@ -11,3 +11,8 @@ I use the event function for the clicking and constrctor for the images.
 ## Author: Batool Ayyad
 
 * [LTUC AMMAN-201d20](https://github.com/LTUC/amman-201d20)
+
+
+# Lab 12
+
+addint chart for the (votes and shown) date.
