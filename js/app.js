@@ -11,11 +11,11 @@ let middleImgIndex;
 let rightImgIndex;
 
 //arrays we will use in the chart
-let namesArr=[];
-let votesArr=[];
-let shownArr=[];
+let namesArr = [];
+let votesArr = [];
+let shownArr = [];
 
-let reapetedImage=[];
+let reapetedImage = [];
 
 let maxAttempts = 25;
 let attemptsCounter = 0;
@@ -25,12 +25,41 @@ function Bus(name, source) {
   this.source = source;
   this.votes = 0;
   this.shown = 0;
-  
+
   Bus.allBuses.push(this);
   namesArr.push(this.name);
+  //updateStorage();
 }
 
 Bus.allBuses = [];
+
+function updateStorage() {
+  // console.log(JSON);
+  let arrayString = JSON.stringify(Bus.allBuses);
+
+  //console.log(Bus.allBuses);
+  console.log(arrayString);
+  localStorage.setItem('Bus', arrayString);
+
+}
+function getBuses() {
+  // get the data from the local storage
+  let data = localStorage.getItem('Bus');
+  console.log(data);
+  // convert data back into a normal array of objects
+  let busData = JSON.parse(data);
+  console.log(busData);
+  // if the first time we visit the page, there will not be an array of objects inside the local storage so we should handle it here:
+  if (busData !== null) {
+    Bus.allBuses = busData;
+  }
+  renderImg();
+}
+
+
+
+
+
 
 new Bus('bag', 'img/bag.jpg');//0
 new Bus('banana', 'img/banana.jpg');//1
@@ -77,12 +106,12 @@ function renderImg() {
   Bus.allBuses[rightImgIndex].shown++;
   Bus.allBuses[middleImgIndex].shown++;
   //to prevent the same img shown
-  
-  while ((reapetedImage.includes(leftImgIndex)||leftImgIndex === middleImgIndex)|| (reapetedImage.includes(rightImgIndex) ||leftImgIndex === rightImgIndex)||  reapetedImage.includes(middleImgIndex)|| middleImgIndex === rightImgIndex ){
- 
+
+  while ((reapetedImage.includes(leftImgIndex) || leftImgIndex === middleImgIndex) || (reapetedImage.includes(rightImgIndex) || leftImgIndex === rightImgIndex) || reapetedImage.includes(middleImgIndex) || middleImgIndex === rightImgIndex) {
+
     leftImgIndex = generateRandomIndex();
     middleImgIndex = generateRandomIndex();
-    rightImgIndex=generateRandomIndex();
+    rightImgIndex = generateRandomIndex();
   }
   //to show the img in the screan 
   leftImageElement.src = Bus.allBuses[leftImgIndex].source;
@@ -91,7 +120,7 @@ function renderImg() {
 
 
 
-  reapetedImage=[];
+  reapetedImage = [];
   reapetedImage.push(leftImgIndex)
   reapetedImage.push(middleImgIndex)
   reapetedImage.push(rightImgIndex)
@@ -99,7 +128,7 @@ function renderImg() {
   console.log(reapetedImage);
 
 
- 
+
 
 }
 
@@ -136,18 +165,20 @@ function handleUserClick(event) {
     console.log(Bus.allBuses);
     renderImg();
   } else {
+    updateStorage();
+    
     let button = document.getElementById('result-btn');
     button.addEventListener('click', resultBtn);
-   //to show the button after the voting ends
-    button.hidden=false;
+    //to show the button after the voting ends
+    button.hidden = false;
 
     //add to the votesArray & shownArray
     for (let i = 0; i < Bus.allBuses.length; i++) {
       votesArr.push(Bus.allBuses[i].votes);
       shownArr.push(Bus.allBuses[i].shown);
     }
-      console.log(votesArr);
-      console.log(shownArr)
+    console.log(votesArr);
+    console.log(shownArr)
 
 
     // show the chart
@@ -157,14 +188,14 @@ function handleUserClick(event) {
     function resultBtn(event) {
       let list = document.getElementById('result-list');
       let busResult;
-      
+
       for (let i = 0; i < Bus.allBuses.length; i++) {
         busResult = document.createElement('li');
         list.appendChild(busResult);
         //banana had 3 votes, and was seen 5 times
         busResult.textContent = `${Bus.allBuses[i].name} had ${Bus.allBuses[i].votes} votes, and was seen ${Bus.allBuses[i].shown} times`;
 
-      } button.removeEventListener('click',resultBtn);
+      } button.removeEventListener('click', resultBtn);
 
     } imgContainerElement.removeEventListener('click', handleUserClick);
 
@@ -173,41 +204,41 @@ function handleUserClick(event) {
 }
 function chart() {
   let ctx = document.getElementById('myChart').getContext('2d');
-  
-  let chart= new Chart(ctx,{
-    // what type is the chart
-   type: 'bar',
 
-  //  the data for showing
-   data:{
-    //  for the names
+  let chart = new Chart(ctx, {
+    // what type is the chart
+    type: 'bar',
+
+    //  the data for showing
+    data: {
+      //  for the names
       labels: namesArr,
-      
+
       datasets: [
         {
-        label: 'Bus votes',
-        data: votesArr,
-        backgroundColor: [
-          '#3a6351',
-        ],
-  
-        borderWidth: 1
-      },
+          label: 'Bus votes',
+          data: votesArr,
+          backgroundColor: [
+            '#3a6351',
+          ],
 
-      {
-        label: 'Bus shown',
-        data: shownArr,
-        backgroundColor: [
-          '#e48257',
-        ],
-  
-        borderWidth: 1
-      }
-      
-    ]
+          borderWidth: 1
+        },
+
+        {
+          label: 'Bus shown',
+          data: shownArr,
+          backgroundColor: [
+            '#e48257',
+          ],
+
+          borderWidth: 1
+        }
+
+      ]
     },
     options: {}
   });
-  
-}
 
+}
+getBuses();

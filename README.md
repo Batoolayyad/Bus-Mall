@@ -16,3 +16,7 @@ I use the event function for the clicking and constrctor for the images.
 # Lab 12
 
 addint chart for the (votes and shown) date.
+
+# Lab 13
+
+adding lacal storage to keep the data after we close or refresh the page.
