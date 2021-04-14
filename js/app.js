@@ -101,14 +101,10 @@ function renderImg() {
   middleImgIndex = generateRandomIndex();
   rightImgIndex = generateRandomIndex();
 
-  //to count how many times each img was shown
-  Bus.allBuses[leftImgIndex].shown++;
-  Bus.allBuses[rightImgIndex].shown++;
-  Bus.allBuses[middleImgIndex].shown++;
   //to prevent the same img shown
-
+  
   while ((reapetedImage.includes(leftImgIndex) || leftImgIndex === middleImgIndex) || (reapetedImage.includes(rightImgIndex) || leftImgIndex === rightImgIndex) || reapetedImage.includes(middleImgIndex) || middleImgIndex === rightImgIndex) {
-
+    
     leftImgIndex = generateRandomIndex();
     middleImgIndex = generateRandomIndex();
     rightImgIndex = generateRandomIndex();
@@ -117,7 +113,11 @@ function renderImg() {
   leftImageElement.src = Bus.allBuses[leftImgIndex].source;
   middleImageElement.src = Bus.allBuses[middleImgIndex].source;
   rightImageElement.src = Bus.allBuses[rightImgIndex].source;
-
+  
+  //to count how many times each img was shown
+  Bus.allBuses[leftImgIndex].shown++;
+  Bus.allBuses[rightImgIndex].shown++;
+  Bus.allBuses[middleImgIndex].shown++;
 
 
   reapetedImage = [];
